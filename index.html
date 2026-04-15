@@ -221,6 +221,168 @@
       border-radius: 8px; padding: 12px 14px; font-size: 13px; margin-top: 10px;
     }
     .campo-erro { border-color: var(--red) !important; }
+
+    /* TAB BAR */
+    .tab-bar {
+      display: flex;
+      background: white;
+      border-bottom: 1px solid var(--gray-border);
+      position: sticky;
+      top: 63px;
+      z-index: 9;
+    }
+    .tab-btn {
+      flex: 1;
+      padding: 12px 8px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--gray-text);
+      cursor: pointer;
+      border-bottom: 2.5px solid transparent;
+      transition: all 0.15s;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tab-btn.active {
+      color: var(--brand);
+      border-bottom-color: var(--brand);
+    }
+
+    /* TELA CONSULTA */
+    #tela-consulta { display: none; }
+    .consulta-input-row {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .consulta-input-row input {
+      flex: 1;
+      padding: 12px 14px;
+      border: 1.5px solid var(--gray-border);
+      border-radius: 8px;
+      font-size: 16px;
+      font-family: monospace;
+      color: var(--text);
+      background: white;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+    .consulta-input-row input:focus {
+      outline: none;
+      border-color: var(--brand);
+      box-shadow: 0 0 0 3px rgba(27,58,140,0.12);
+    }
+    .btn-consultar {
+      padding: 12px 18px;
+      background: var(--brand);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      white-space: nowrap;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn-consultar:active { transform: scale(0.98); }
+
+    /* CARD DE RESULTADO */
+    .resultado-card {
+      display: none;
+      background: white;
+      border-radius: var(--radius);
+      border: 1px solid var(--gray-border);
+      overflow: hidden;
+    }
+    .resultado-header {
+      background: var(--brand);
+      padding: 14px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .resultado-id {
+      font-family: monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: white;
+      letter-spacing: 1px;
+    }
+    .status-pill {
+      font-size: 12px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+    }
+    .status-pill.aberto     { background: #FCEBEB; color: #791F1F; }
+    .status-pill.andamento  { background: #E6F1FB; color: #185FA5; }
+    .status-pill.concluido  { background: #EAF3DE; color: #3B6D11; }
+    .status-pill.cancelado  { background: #F1EFE8; color: #5F5E5A; }
+    .status-pill.aguardando { background: #FAEEDA; color: #854F0B; }
+
+    .resultado-body { padding: 16px; }
+    .res-row {
+      display: flex;
+      gap: 8px;
+      padding: 9px 0;
+      border-bottom: 1px solid var(--gray-border);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+    .res-row:last-child { border-bottom: none; }
+    .res-label {
+      min-width: 110px;
+      font-weight: 600;
+      color: var(--gray-text);
+      font-size: 13px;
+    }
+    .res-value { color: var(--text); flex: 1; }
+
+    /* TIMELINE DE STATUS */
+    .timeline { padding: 16px; border-top: 1px solid var(--gray-border); }
+    .timeline-title { font-size: 12px; font-weight: 600; color: var(--gray-text); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 14px; }
+    .tl-item { display: flex; gap: 12px; margin-bottom: 14px; }
+    .tl-item:last-child { margin-bottom: 0; }
+    .tl-dot-col { display: flex; flex-direction: column; align-items: center; }
+    .tl-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      margin-top: 3px;
+    }
+    .tl-dot.done  { background: var(--brand); }
+    .tl-dot.atual { background: #BA7517; }
+    .tl-dot.pend  { background: var(--gray-border); }
+    .tl-line {
+      width: 2px; flex: 1;
+      background: var(--gray-border);
+      margin: 4px 0;
+      min-height: 16px;
+    }
+    .tl-content { flex: 1; padding-bottom: 4px; }
+    .tl-label { font-size: 14px; font-weight: 600; color: var(--text); }
+    .tl-sub   { font-size: 12px; color: var(--gray-text); margin-top: 2px; }
+
+    .obs-box {
+      background: var(--brand-light);
+      border-radius: 8px;
+      padding: 12px 14px;
+      margin-top: 12px;
+      font-size: 13px;
+      color: var(--brand-dark);
+      line-height: 1.6;
+    }
+    .obs-box strong { display: block; margin-bottom: 4px; font-size: 12px; text-transform: uppercase; letter-spacing: 0.4px; }
+
+    .nao-encontrado {
+      display: none;
+      text-align: center;
+      padding: 32px 20px;
+      color: var(--gray-text);
+      font-size: 14px;
+    }
+    .nao-encontrado svg { margin-bottom: 12px; }
   </style>
 </head>
 <body>
@@ -231,6 +393,18 @@
   <span class="header-sub">Chamados — Residências</span>
 </header>
 
+
+<div class="tab-bar">
+  <button class="tab-btn active" id="tab-abrir" onclick="trocarAba('abrir')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:4px;"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    Abrir chamado
+  </button>
+  <button class="tab-btn" id="tab-consultar" onclick="trocarAba('consultar')">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" style="vertical-align:middle;margin-right:4px;"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+    Consultar
+  </button>
+</div>
+
 <div class="container">
 
   <div id="tela-form">
@@ -240,6 +414,12 @@
       <div class="field">
         <label for="f-nome">Nome completo *</label>
         <input type="text" id="f-nome" placeholder="Ex: João da Silva" autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="f-email">Seu e-mail *</label>
+        <input type="email" id="f-email" placeholder="Ex: joao@email.com" autocomplete="email"
+          style="text-transform:lowercase;" />
+        <p style="font-size:11px;color:var(--gray-text);margin-top:5px;">Você receberá o número do chamado por e-mail.</p>
       </div>
       <div class="field">
         <label for="f-casa">Sua residência *</label>
@@ -348,6 +528,52 @@
     <button class="btn-novo" type="button" onclick="novoFormulario()">Abrir novo chamado</button>
   </div>
 
+  <!-- TELA CONSULTA -->
+  <div id="tela-consulta">
+    <div class="card" style="margin-top:4px;">
+      <div class="card-title">Consultar chamado</div>
+      <div class="consulta-input-row">
+        <input type="text" id="input-gl" placeholder="Ex: GL-0012" maxlength="10"
+          oninput="this.value=this.value.toUpperCase()"
+          onkeydown="if(event.key==='Enter') consultarChamado()" />
+        <button class="btn-consultar" onclick="consultarChamado()">Buscar</button>
+      </div>
+      <p style="font-size:12px;color:var(--gray-text);">Digite o número do chamado que você recebeu ao abrir a solicitação.</p>
+    </div>
+
+    <div class="resultado-card" id="resultado-card">
+      <div class="resultado-header">
+        <span class="resultado-id" id="res-id">GL-0000</span>
+        <span class="status-pill" id="res-status-pill">Aberto</span>
+      </div>
+      <div class="resultado-body">
+        <div class="res-row"><span class="res-label">Morador</span>    <span class="res-value" id="res-nome"></span></div>
+        <div class="res-row"><span class="res-label">Residência</span> <span class="res-value" id="res-casa"></span></div>
+        <div class="res-row"><span class="res-label">Categoria</span>  <span class="res-value" id="res-cat"></span></div>
+        <div class="res-row"><span class="res-label">Prioridade</span> <span class="res-value" id="res-prio"></span></div>
+        <div class="res-row"><span class="res-label">Aberto em</span>  <span class="res-value" id="res-data"></span></div>
+        <div class="res-row"><span class="res-label">Descrição</span>  <span class="res-value" id="res-desc"></span></div>
+      </div>
+
+      <div class="timeline">
+        <div class="timeline-title">Andamento do chamado</div>
+        <div id="tl-container"></div>
+      </div>
+
+      <div class="obs-box" id="obs-box" style="display:none;margin:0 16px 16px;">
+        <strong>Observação da manutenção</strong>
+        <span id="obs-texto"></span>
+      </div>
+    </div>
+
+    <div class="nao-encontrado" id="nao-encontrado">
+      <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="var(--gray-border)" stroke-width="1.5">
+        <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+      </svg>
+      <p>Chamado não encontrado.<br>Verifique o número e tente novamente.</p>
+    </div>
+  </div>
+
 </div>
 
 <script>
@@ -404,7 +630,7 @@
   // ── VALIDAÇÃO ────────────────────────────────────────────
   function validar() {
     var ok = true;
-    var campos = ["f-nome", "f-casa", "f-cat", "f-desc"];
+    var campos = ["f-nome", "f-email", "f-casa", "f-cat", "f-desc"];
     campos.forEach(function(id) {
       var el = document.getElementById(id);
       if (!el.value.trim()) {
@@ -444,6 +670,7 @@
     var payload = {
       acao:       "abrirChamado",
       nome:       document.getElementById("f-nome").value.trim(),
+      email:      document.getElementById("f-email").value.trim(),
       residencia: document.getElementById("f-casa").value,
       categoria:  document.getElementById("f-cat").value,
       prioridade: prioSel,
@@ -475,6 +702,7 @@
     document.getElementById("ticket-id").textContent = data.id;
     document.getElementById("sucesso-resumo").innerHTML =
       "<strong>Morador:</strong> " + payload.nome + "<br>" +
+      "<strong>E-mail:</strong> " + payload.email + "<br>" +
       "<strong>Residência:</strong> " + payload.residencia + "<br>" +
       "<strong>Categoria:</strong> " + payload.categoria + "<br>" +
       "<strong>Prioridade:</strong> " + payload.prioridade + "<br>" +
@@ -485,7 +713,8 @@
   }
 
   function novoFormulario() {
-    document.getElementById("f-nome").value = "";
+    document.getElementById("f-nome").value  = "";
+    document.getElementById("f-email").value = "";
     document.getElementById("f-desc").value = "";
     document.getElementById("f-casa").selectedIndex = 0;
     document.getElementById("f-cat").selectedIndex  = 0;
@@ -499,11 +728,134 @@
   }
 
   // Remove estilo de erro ao digitar
-  ["f-nome","f-casa","f-cat","f-desc"].forEach(function(id) {
+  ["f-nome","f-email","f-casa","f-cat","f-desc"].forEach(function(id) {
     document.getElementById(id).addEventListener("input", function() {
       this.classList.remove("campo-erro");
     });
   });
+
+  // ── ABAS ─────────────────────────────────────────────────
+  function trocarAba(aba) {
+    document.getElementById("tab-abrir").classList.toggle("active", aba === "abrir");
+    document.getElementById("tab-consultar").classList.toggle("active", aba === "consultar");
+
+    var telaForm     = document.getElementById("tela-form");
+    var telaSucesso  = document.getElementById("tela-sucesso");
+    var telaConsulta = document.getElementById("tela-consulta");
+
+    if (aba === "abrir") {
+      telaForm.style.display     = "block";
+      telaSucesso.style.display  = "none";
+      telaConsulta.style.display = "none";
+    } else {
+      telaForm.style.display     = "none";
+      telaSucesso.style.display  = "none";
+      telaConsulta.style.display = "block";
+    }
+  }
+
+  // ── CONSULTAR CHAMADO ────────────────────────────────────
+  function consultarChamado() {
+    var num = document.getElementById("input-gl").value.trim().toUpperCase();
+    if (!num || num.length < 4) {
+      document.getElementById("input-gl").focus();
+      return;
+    }
+    // Garantir prefixo GL-
+    if (!num.startsWith("GL-")) {
+      num = "GL-" + num.replace(/[^0-9]/g, "").padStart(4, "0");
+      document.getElementById("input-gl").value = num;
+    }
+
+    var btn = document.querySelector(".btn-consultar");
+    btn.textContent = "Buscando...";
+    btn.disabled = true;
+
+    document.getElementById("resultado-card").style.display  = "none";
+    document.getElementById("nao-encontrado").style.display  = "none";
+
+    fetch(SCRIPT_URL + "?acao=consultarChamado&id=" + encodeURIComponent(num))
+      .then(function(r) { return r.json(); })
+      .then(function(data) {
+        if (data.ok && data.chamado) {
+          exibirResultado(data.chamado);
+        } else {
+          document.getElementById("nao-encontrado").style.display = "block";
+        }
+      })
+      .catch(function() {
+        document.getElementById("nao-encontrado").style.display = "block";
+      })
+      .finally(function() {
+        btn.textContent = "Buscar";
+        btn.disabled = false;
+      });
+  }
+
+  function exibirResultado(c) {
+    document.getElementById("res-id").textContent   = c.id;
+    document.getElementById("res-nome").textContent = c.nome;
+    document.getElementById("res-casa").textContent = c.residencia;
+    document.getElementById("res-cat").textContent  = c.categoria;
+    document.getElementById("res-prio").textContent = c.prioridade === "Media" ? "Média" : c.prioridade;
+    document.getElementById("res-data").textContent = c.dataAbertura + " às " + c.horaAbertura.substring(0,5);
+    document.getElementById("res-desc").textContent = c.descricao;
+
+    // Status pill
+    var pill = document.getElementById("res-status-pill");
+    var statusMap = { "Aberto": "aberto", "Em Andamento": "andamento", "Aguardando Material": "aguardando", "Concluído": "concluido", "Cancelado": "cancelado" };
+    pill.textContent = c.status;
+    pill.className   = "status-pill " + (statusMap[c.status] || "aberto");
+
+    // Timeline
+    var etapas = [
+      { key: "Aberto",               label: "Chamado recebido",        sub: c.dataAbertura + " às " + c.horaAbertura.substring(0,5) },
+      { key: "Em Andamento",         label: "Em atendimento",          sub: c.status === "Em Andamento" || c.status === "Aguardando Material" || c.status === "Concluído" ? (c.dataAtualizacao || "") : "Aguardando início" },
+      { key: "Aguardando Material",  label: "Aguardando material",     sub: c.status === "Aguardando Material" ? (c.dataAtualizacao || "") : (c.status === "Concluído" ? "Concluído" : "—") },
+      { key: "Concluído",            label: "Problema resolvido",      sub: c.status === "Concluído" ? (c.dataAtualizacao || "") : "Pendente" }
+    ];
+
+    var ordem = ["Aberto", "Em Andamento", "Aguardando Material", "Concluído"];
+    var atual  = ordem.indexOf(c.status);
+    if (c.status === "Cancelado") atual = -1;
+
+    var html = "";
+    etapas.forEach(function(et, i) {
+      var isDone  = i < atual || (i === atual && c.status !== "Cancelado");
+      var isAtual = ordem[i] === c.status;
+      var dotCls  = isDone ? "done" : (isAtual ? "atual" : "pend");
+      var isLast  = i === etapas.length - 1;
+
+      html += '<div class="tl-item">';
+      html += '  <div class="tl-dot-col">';
+      html += '    <div class="tl-dot ' + dotCls + '"></div>';
+      if (!isLast) html += '    <div class="tl-line"></div>';
+      html += '  </div>';
+      html += '  <div class="tl-content">';
+      html += '    <div class="tl-label">' + et.label + '</div>';
+      html += '    <div class="tl-sub">'   + et.sub   + '</div>';
+      html += '  </div>';
+      html += '</div>';
+    });
+
+    if (c.status === "Cancelado") {
+      html += '<div class="tl-item"><div class="tl-dot-col"><div class="tl-dot" style="background:#A32D2D"></div></div><div class="tl-content"><div class="tl-label" style="color:#A32D2D">Chamado cancelado</div><div class="tl-sub">' + (c.dataAtualizacao || "") + '</div></div></div>';
+    }
+
+    document.getElementById("tl-container").innerHTML = html;
+
+    // Observação técnica
+    if (c.observacao && c.observacao.trim()) {
+      document.getElementById("obs-texto").textContent = c.observacao;
+      document.getElementById("obs-box").style.display = "block";
+    } else {
+      document.getElementById("obs-box").style.display = "none";
+    }
+
+    document.getElementById("resultado-card").style.display = "block";
+    document.getElementById("resultado-card").scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
 </script>
 </body>
 </html>
