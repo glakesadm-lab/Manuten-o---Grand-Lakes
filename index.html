@@ -793,68 +793,155 @@
   }
 
   function exibirResultado(c) {
+
+    // Formata data corretamente — converte objeto Date ou string para dd/MM/yyyy HH:mm
+    function fmtData(val) {
+      if (!val || val === "—") return "—";
+      // Se vier como objeto Date serializado (ex: "Wed Apr 22 2026...")
+      var d = new Date(val);
+      if (!isNaN(d.getTime())) {
+        var dd = String(d.getDate()).padStart(2,"0");
+        var mm = String(d.getMonth()+1).padStart(2,"0");
+        var yy = d.getFullYear();
+        var hh = String(d.getHours()).padStart(2,"0");
+        var mi = String(d.getMinutes()).padStart(2,"0");
+        return dd+"/"+mm+"/"+yy+" às "+hh+":"+mi;
+      }
+      // Se já vier formatado (dd/MM/yyyy HH:mm)
+      return val;
+    }
+
+    // Campos do resumo
     document.getElementById("res-id").textContent   = c.id;
     document.getElementById("res-nome").textContent = c.nome;
     document.getElementById("res-casa").textContent = c.residencia;
     document.getElementById("res-cat").textContent  = c.categoria;
     document.getElementById("res-prio").textContent = c.prioridade === "Media" ? "Média" : c.prioridade;
-    document.getElementById("res-data").textContent = c.dataAbertura + " às " + c.horaAbertura.substring(0,5);
+    document.getElementById("res-data").textContent = fmtData(c.dataAbertura + " " + c.horaAbertura);
     document.getElementById("res-desc").textContent = c.descricao;
 
     // Status pill
     var pill = document.getElementById("res-status-pill");
-    var statusMap = { "Aberto": "aberto", "Em Andamento": "andamento", "Aguardando Material": "aguardando", "Concluído": "concluido", "Cancelado": "cancelado" };
+    var statusMap = {
+      "Aberto": "aberto",
+      "Em Andamento": "andamento",
+      "Aguardando Material": "aguardando",
+      "Concluído": "concluido",
+      "Cancelado": "cancelado"
+    };
     pill.textContent = c.status;
     pill.className   = "status-pill " + (statusMap[c.status] || "aberto");
 
-    // Timeline
+    // ── Timeline ─────────────────────────────────────────────
+    // Só mostra etapas que já aconteceram ou a atual
+    var ordem  = ["Aberto", "Em Andamento", "Aguardando Material", "Concluído"];
+    var iAtual = ordem.indexOf(c.status);
+    if (c.status === "Cancelado") iAtual = 0; // mostra só "Recebido"
+
+    // Etapas fixas com labels e datas contextuais
     var etapas = [
-      { key: "Aberto",               label: "Chamado recebido",        sub: c.dataAbertura + " às " + c.horaAbertura.substring(0,5) },
-      { key: "Em Andamento",         label: "Em atendimento",          sub: c.status === "Em Andamento" || c.status === "Aguardando Material" || c.status === "Concluído" ? (c.dataAtualizacao || "") : "Aguardando início" },
-      { key: "Aguardando Material",  label: "Aguardando material",     sub: c.status === "Aguardando Material" ? (c.dataAtualizacao || "") : (c.status === "Concluído" ? "Concluído" : "—") },
-      { key: "Concluído",            label: "Problema resolvido",      sub: c.status === "Concluído" ? (c.dataAtualizacao || "") : "Pendente" }
+      {
+        key:   "Aberto",
+        label: "Chamado recebido",
+        data:  fmtData(c.dataAbertura + " " + c.horaAbertura),
+        obs:   ""
+      },
+      {
+        key:   "Em Andamento",
+        label: "Em atendimento",
+        data:  (iAtual >= 1) ? fmtData(c.dataAtualizacao) : "",
+        obs:   (c.status === "Em Andamento") ? c.observacao : ""
+      },
+      {
+        key:   "Aguardando Material",
+        label: "Aguardando material",
+        data:  (c.status === "Aguardando Material") ? fmtData(c.dataAtualizacao) : "",
+        obs:   (c.status === "Aguardando Material") ? c.observacao : ""
+      },
+      {
+        key:   "Concluído",
+        label: "Problema resolvido",
+        data:  (c.status === "Concluído") ? fmtData(c.dataAtualizacao) : "",
+        obs:   (c.status === "Concluído") ? c.observacao : ""
+      }
     ];
 
-    var ordem = ["Aberto", "Em Andamento", "Aguardando Material", "Concluído"];
-    var atual  = ordem.indexOf(c.status);
-    if (c.status === "Cancelado") atual = -1;
-
     var html = "";
-    etapas.forEach(function(et, i) {
-      var isDone  = i < atual || (i === atual && c.status !== "Cancelado");
-      var isAtual = ordem[i] === c.status;
-      var dotCls  = isDone ? "done" : (isAtual ? "atual" : "pend");
-      var isLast  = i === etapas.length - 1;
 
-      html += '<div class="tl-item">';
-      html += '  <div class="tl-dot-col">';
-      html += '    <div class="tl-dot ' + dotCls + '"></div>';
-      if (!isLast) html += '    <div class="tl-line"></div>';
-      html += '  </div>';
-      html += '  <div class="tl-content">';
-      html += '    <div class="tl-label">' + et.label + '</div>';
-      html += '    <div class="tl-sub">'   + et.sub   + '</div>';
-      html += '  </div>';
-      html += '</div>';
+    etapas.forEach(function(et, i) {
+      // Só renderiza etapas que já ocorreram ou a atual
+      // "Aguardando Material" só aparece se o status passou por ela
+      if (et.key === "Aguardando Material" && c.status !== "Aguardando Material" && c.status !== "Concluído") return;
+
+      var concluida = i < iAtual || (c.status === "Concluído" && et.key === "Concluído");
+      var atual     = et.key === c.status;
+      var pendente  = !concluida && !atual;
+
+      var dotCls = concluida ? "done" : (atual ? "atual" : "pend");
+      var isLast = (i === etapas.length - 1) || (et.key === c.status && c.status !== "Em Andamento");
+
+      html += "<div class='tl-item'>";
+      html += "<div class='tl-dot-col'>";
+      html += "<div class='tl-dot " + dotCls + "'></div>";
+      if (!pendente && i < etapas.length - 1) html += "<div class='tl-line'></div>";
+      html += "</div>";
+      html += "<div class='tl-content'>";
+      html += "<div class='tl-label'>" + et.label + "</div>";
+      if (et.data) html += "<div class='tl-sub'>" + et.data + "</div>";
+      // Responsável quando disponível
+      if (atual && c.responsavel) {
+        html += "<div class='tl-sub' style='margin-top:4px;'>Técnico: <strong>" + c.responsavel + "</strong></div>";
+      }
+      // Observação da etapa atual
+      if (atual && et.obs) {
+        html += "<div style='margin-top:6px;background:var(--brand-light);border-radius:6px;padding:8px 10px;font-size:12px;color:var(--brand-dark);line-height:1.5;'>"
+          + "<strong style='display:block;font-size:11px;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:3px;'>Observação</strong>"
+          + et.obs
+          + "</div>";
+      }
+      html += "</div></div>";
     });
 
+    // Etapa cancelado
     if (c.status === "Cancelado") {
-      html += '<div class="tl-item"><div class="tl-dot-col"><div class="tl-dot" style="background:#A32D2D"></div></div><div class="tl-content"><div class="tl-label" style="color:#A32D2D">Chamado cancelado</div><div class="tl-sub">' + (c.dataAtualizacao || "") + '</div></div></div>';
+      html += "<div class='tl-item'>"
+        + "<div class='tl-dot-col'><div class='tl-dot' style='background:#A32D2D'></div></div>"
+        + "<div class='tl-content'>"
+        + "<div class='tl-label' style='color:#A32D2D'>Chamado cancelado</div>"
+        + (c.dataAtualizacao ? "<div class='tl-sub'>" + fmtData(c.dataAtualizacao) + "</div>" : "")
+        + "</div></div>";
+    }
+
+    // Bloco de conclusão com observação (quando concluído)
+    if (c.status === "Concluído" && (c.observacao || c.responsavel)) {
+      html += "<div style='margin-top:12px;background:var(--brand-light);border-radius:8px;padding:12px 14px;'>"
+        + "<div style='font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;color:var(--brand-dark);margin-bottom:8px;'>Registro de conclusão</div>";
+      if (c.responsavel) {
+        html += "<div style='font-size:13px;color:var(--brand-dark);margin-bottom:4px;'>"
+          + "<strong>Técnico:</strong> " + c.responsavel + "</div>";
+      }
+      if (c.tempoTotal) {
+        var mins = parseInt(c.tempoTotal) || 0;
+        var tStr = mins < 60 ? mins + " min" : Math.floor(mins/60) + "h " + (mins%60) + "min";
+        html += "<div style='font-size:13px;color:var(--brand-dark);margin-bottom:4px;'>"
+          + "<strong>Tempo de atendimento:</strong> " + tStr + "</div>";
+      }
+      if (c.observacao) {
+        html += "<div style='font-size:13px;color:var(--brand-dark);margin-top:6px;'>"
+          + "<strong>Observação:</strong> " + c.observacao + "</div>";
+      }
+      html += "</div>";
     }
 
     document.getElementById("tl-container").innerHTML = html;
 
-    // Observação técnica
-    if (c.observacao && c.observacao.trim()) {
-      document.getElementById("obs-texto").textContent = c.observacao;
-      document.getElementById("obs-box").style.display = "block";
-    } else {
-      document.getElementById("obs-box").style.display = "none";
-    }
+    // Caixa de observação antiga — não usar mais (agora está integrada na timeline)
+    document.getElementById("obs-box").style.display = "none";
 
     document.getElementById("resultado-card").style.display = "block";
     document.getElementById("resultado-card").scrollIntoView({ behavior: "smooth", block: "start" });
   }
+>
 
 </script>
 </body>
